@@ -3,39 +3,28 @@ package com.epam.mjc.nio;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 public class FileReader {
 
     public Profile getDataFromFile(File file) {
-        Profile profile = new Profile();
-        Path path = Paths.get(file.getPath());
-        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-
-
-            String currentLine = null;
-            while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.contains("Name")) {
-                    profile.setName(currentLine.substring(currentLine.indexOf(" ") + 1, currentLine.length() ));
+            List<String> data = new ArrayList<>();
+            String n;
+            int i=0;
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new java.io.FileReader(file));
+                while ((n = Objects.requireNonNull(bufferedReader).readLine()) != null) {
+                    String[] split = n.split(" ");
+                    data.add(i,split[1]);
+                    i++;
                 }
-                if (currentLine.contains("Age")) {
-                    profile.setAge(Integer.parseInt(currentLine.substring(currentLine.indexOf(" ")+1 , currentLine.length() )));
-                }
-                if (currentLine.contains("Email")) {
-                    profile.setEmail(currentLine.substring(currentLine.indexOf(" ") + 1, currentLine.length() ));
-                }
-                if (currentLine.contains("Phone")) {
-                    profile.
-                            setPhone(Long.parseLong(currentLine.substring(currentLine.indexOf(" ") + 1, currentLine.length() )));
-                }
+                bufferedReader.close();
+            }catch (IOException e){
+                e.printStackTrace();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            return new Profile(data.get(0),Integer.parseInt(data.get(1)),data.get(2),Long.parseLong(data.get(3)));
         }
-        return profile;
-    }
 }
